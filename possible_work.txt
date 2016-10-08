@@ -1,0 +1,2 @@
+Potential future things to consider:
+-Have point value dictionary in definition file for greater customization
