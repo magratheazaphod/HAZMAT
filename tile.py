@@ -14,7 +14,27 @@ class Tile:
     
     def __init__(self, PrintedOnTile):
         self.POT = PrintedOnTile 
-        self.PointValue = self.PointValueDict[PrintedOnTile]
-        self.Type = 'Q'
+        
+        #Assign point value (checks if actually a real tile!)
+        try:
+            self.PointValue = self.PointValueDict[PrintedOnTile]
+        except KeyError:
+            print("WARNING: The tile you've attempted to create doesn't exist in A-Math!")
+            print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|- or *|/) or a blank (?).")
+            print("Tile was NOT created.")
+            
+        self.Type = self.DetermineType()
 
-#    def DetermineType(
+    def DetermineType(self):
+        if self.POT == '?':
+            return 'Blank'
+        
+        #Check if integer, and if so, check if one or two digits - two digit numbers cannot be concatenated with other numbers.
+        elif str.isdigit(self.POT):
+            if len(self.POT) == 1:
+                return 'OneDigit'
+            else:
+                return 'TwoDigit'
+                
+        else: #exhausted all other options. Once you eliminate the impossible, whatever remains, no matter how improbable, must be the truth. Er, type.
+            return 'Operator'
