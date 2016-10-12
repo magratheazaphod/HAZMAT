@@ -17,14 +17,18 @@ class Tilebag:
     
     def __init__(self): #creates empty tilebag object
         self.InBag = []
+        
+    def AddTileToBag(self): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
+        self.InBag.append(Tile.Tile(k))
 
     def FillBag(self):
         
         for k, v in self.TileDistribution.items():
             for i in range(v):
+                self.AddTileToBag(k)
                 
-                self.InBag.append(Tile.Tile(k))
-                
-    #def DrawTile(self):
+    def DrawTile(self):
+        
+        return 0
         
     #def SwapTiles(self):
