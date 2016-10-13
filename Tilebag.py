@@ -1,5 +1,6 @@
 #Tilebag class as part of HAZMAT - Jesse Day's A-Math solver.
 #A collection of Tile objects and related operations (see class).
+#Also attempted to implement as a dictionary showing quantities of each tile remaining, but this way makes random drawing easier.
 
 #Functions: -Fill (a brand new tile bag)
 #           -DrawTile (Returns tile object and updated tilebag with tile removed)
@@ -18,14 +19,26 @@ class Tilebag:
     
     def __init__(self): #creates a zero dictionary showing current tiles in tilebag, and also stores all current tiles as array
         
-        self.TilesInBag = dict.fromkeys(self.BaseTileDistribution, 0)
+        #self.Distribution = dict.fromkeys(self.BaseTileDistribution, 0)
+        self.TilesInBag = []
+        
         
     def FillBag(self): #set bag to reference tile distribution
                 
-        self.TilesInBag = self.BaseTileDistribution    
+        #self.Distribution = self.BaseTileDistribution    
+        
+        for k, v in self.BaseTileDistribution.items():
+            for i in range(v): #add multiple copies of each tile to tilebag depending on how many are supposed to be in there
+                self.AddTileToBag(k) #handled in external function
+        
         
     def AddTileToBag(self, Denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
-        self.Distribution[Denomination] += 1
+        
+        if self.BaseTileDistribution[Denomination] >= self.TilesInBag
+        
+        
+        self.TilesInBag.append(Tile.Tile(k))
+        yesno = input('Are you sure you want to continue? (y)es or (n)o:')
                 
     def DrawTile(self, TileDesired = 'rand'):
 
