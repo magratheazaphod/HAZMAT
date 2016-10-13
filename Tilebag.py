@@ -35,7 +35,10 @@ class Tilebag:
                 
     def HowManyInBag(self, Filter=""): #check how many tiles there are of a particular denomination in the bag
         
-        if Filter.lower() in 'onedigit': #case insensitive
+        if type(Filter) == int: #if user put in an integer, start by converting to a string
+            Filter = str(Filter)
+        
+        if Filter.lower() == 'onedigit': #case insensitive
             mymap = map(lambda x: x.Type == 'OneDigit', self.TilesInBag)
         
         elif Filter.lower() == 'twodigit': #case insensitive
@@ -69,11 +72,8 @@ class Tilebag:
     def AddTileToBag(self, Denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
         
         try:
-            
-            print(self.BaseTileDistribution[Denomination])
-            print(self.HowManyInBag(Denomination))
-            
-            if self.HowManyInBag(Denomination) >= self.BaseTileDistribution[Denomination]:
+            #order matters on next line - checks for key error first before trying to see how many are in bag
+            if self.BaseTileDistribution[Denomination] <= self.HowManyInBag(Denomination):
                 print('WARNING: You are adding another', Denomination, 'even though this exceeds the standard distribution.')
                 override = input('Are you sure you want to continue? (n)o or (y)es:')
             
@@ -88,14 +88,15 @@ class Tilebag:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
+    #def PrintBag:   #Print out contents of tilebag           
                 
-    def DrawTile(self, TileDesired = 'rand'):
+                
+    #def DrawTile(self, TileDesired = 'rand'):
 
         #if thing in self: some_list.remove(thing)
             
-        TileDrawn = rnd.choice(self.TilesInBag)
-        self.Distribution[TileDrawn.POT] -= 1
+        #TileDrawn = rnd.choice(self.TilesInBag)
+        #self.Distribution[TileDrawn.POT] -= 1
         
     #def SwapTiles(self):        
     
-    #def PrintBag:   #Print out contents of tilebag
