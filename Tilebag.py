@@ -2,7 +2,8 @@
 #A collection of Tile objects and related operations (see class).
 #Also attempted to implement as a dictionary showing quantities of each tile remaining, but this way makes random drawing easier.
 
-#Functions: -Fill (a brand new tile bag)
+#Functions: -FillBag (fill a brand new tile bag with Tile objects)
+#           -HowManyInBag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
 #           -DrawTile (Returns tile object and updated tilebag with tile removed)
 #           -Exchange (Replace inputted tiles with new random tiles
 
@@ -30,15 +31,63 @@ class Tilebag:
         for k, v in self.BaseTileDistribution.items():
             for i in range(v): #add multiple copies of each tile to tilebag depending on how many are supposed to be in there
                 self.AddTileToBag(k) #handled in external function
+               
+                
+    def HowManyInBag(self, Filter=""): #check how many tiles there are of a particular denomination in the bag
         
+        if Filter.lower() in 'onedigit': #case insensitive
+            mymap = map(lambda x: x.Type == 'OneDigit', self.TilesInBag)
+        
+        elif Filter.lower() == 'twodigit': #case insensitive
+            mymap = map(lambda x: x.Type == 'TwoDigit', self.TilesInBag)
+        
+        elif Filter.lower() in ['number', 'numbers']: #can check for number OR numbers
+            mymap = map(lambda x: (x.Type == 'OneDigit') | (x.Type == 'TwoDigit'), self.TilesInBag)
+            
+        elif Filter.lower() in ['operator', 'operators']: #more flexible query
+            mymap = map(lambda x: x.Type == 'Operator', self.TilesInBag)
+            
+        elif Filter.lower() in ['blank', 'blanks']: #same as above, more flexible query
+            mymap = map(lambda x: x.Type == 'Blank', self.TilesInBag)
+        
+        #if it's not a type filter, then checks for how many tiles match given denomination
+        elif Filter: 
+            if Filter in self.BaseTileDistribution.keys():
+                mymap = map(lambda x: x.POT == Filter, self.TilesInBag)
+            else:
+                print('This is not a tile denomation or tile type included in a standard A-Math set.')
+                print('Valid types to search for include OneDigit, TwoDigit, number, Operator and Blank.')
+                return
+            
+        else: # if no filter is given, just counts how many tiles are in the bag
+            mymap = map(lambda x: True, self.TilesInBag)
+            
+        num = sum(mymap)
+        return num  
+            
         
     def AddTileToBag(self, Denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
         
-        if self.BaseTileDistribution[Denomination] >= self.TilesInBag
+        try:
+            
+            print(self.BaseTileDistribution[Denomination])
+            print(self.HowManyInBag(Denomination))
+            
+            if self.HowManyInBag(Denomination) >= self.BaseTileDistribution[Denomination]:
+                print('WARNING: You are adding another', Denomination, 'even though this exceeds the standard distribution.')
+                override = input('Are you sure you want to continue? (n)o or (y)es:')
+            
+                if override.lower() not in ['y', 'yes']:
+                    print('Did not add tile in question.')
+                    return
         
+            self.TilesInBag.append(Tile.Tile(Denomination))
         
-        self.TilesInBag.append(Tile.Tile(k))
-        yesno = input('Are you sure you want to continue? (y)es or (n)o:')
+        except KeyError:
+            print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
+            print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
+            print("Tile was NOT added to tilebag.")
+            
                 
     def DrawTile(self, TileDesired = 'rand'):
 
@@ -48,3 +97,5 @@ class Tilebag:
         self.Distribution[TileDrawn.POT] -= 1
         
     #def SwapTiles(self):        
+    
+    #def PrintBag:   #Print out contents of tilebag
