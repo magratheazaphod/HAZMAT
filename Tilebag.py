@@ -7,94 +7,92 @@
 #           -DrawTile (Returns tile object and updated tilebag with tile removed)
 #           -Exchange (Replace inputted tiles with new random tiles
 
-import Tile
+from Tile import Tile
 import numpy.random as rnd
 
 class Tilebag:
     
-    BaseTileDistribution = {'0': 5, '1': 6,  '2': 6,  '3': 5, '4': 5,  '5': 4, \
-                        '6': 4, '7': 4,  '8': 4,  '9': 4,'10': 2, '11': 1, \
-                       '12': 2,'13': 1, '14': 1, '15': 1,'16': 1, '17': 1, \
-                       '18': 1,'19': 1, '20': 1,  '+': 4, '-': 4,  '?': 4, \
-                        '*': 4, '/': 4,'+|-': 5,'*|/': 4, '=': 11}
+    base_tile_distribution = {'0': 5, '1': 6,  '2': 6,  '3': 5, '4': 5,  '5': 4, \
+                              '6': 4, '7': 4,  '8': 4,  '9': 4,'10': 2, '11': 1, \
+                             '12': 2,'13': 1, '14': 1, '15': 1,'16': 1, '17': 1, \
+                             '18': 1,'19': 1, '20': 1,  '+': 4, '-': 4,  '?': 4, \
+                              '*': 4, '/': 4,'+|-': 5,'*|/': 4, '=': 11}
     
     def __init__(self): #creates a zero dictionary showing current tiles in tilebag, and also stores all current tiles as array
         
-        #self.Distribution = dict.fromkeys(self.BaseTileDistribution, 0)
-        self.TilesInBag = []
+        self.tiles_in_bag = []
         
         
-    def FillBag(self): #set bag to reference tile distribution
-                
-        #self.Distribution = self.BaseTileDistribution    
-        
-        for k, v in self.BaseTileDistribution.items():
+    def fill_bag(self): #set bag to reference tile distribution
+                        
+        for k, v in self.base_tile_distribution.items():
             for i in range(v): #add multiple copies of each tile to tilebag depending on how many are supposed to be in there
-                self.AddTileToBag(k) #handled in external function
+                self.add_tile_to_bag(k) #handled in external function
                
                 
-    def HowManyInBag(self, Filter=""): #check how many tiles there are of a particular denomination in the bag
+    def how_many_in_bag(self, myfilter=""): #check how many tiles there are of a particular denomination in the bag
         
-        if type(Filter) == int: #if user put in an integer, start by converting to a string
+        if type(myfilter) == int: #if user put in an integer, start by converting to a string
             Filter = str(Filter)
         
-        if Filter.lower() == 'onedigit': #case insensitive
-            mymap = map(lambda x: x.Type == 'OneDigit', self.TilesInBag)
+        if myfilter.lower() == 'onedigit': #case insensitive
+            mymap = map(lambda x: x.Type == 'OneDigit', self.tiles_in_bag)
         
-        elif Filter.lower() == 'twodigit': #case insensitive
-            mymap = map(lambda x: x.Type == 'TwoDigit', self.TilesInBag)
+        elif myfilter.lower() == 'twodigit': #case insensitive
+            mymap = map(lambda x: x.Type == 'TwoDigit', self.tiles_in_bag)
         
-        elif Filter.lower() in ['number', 'numbers']: #can check for number OR numbers
-            mymap = map(lambda x: (x.Type == 'OneDigit') | (x.Type == 'TwoDigit'), self.TilesInBag)
+        elif myfilter.lower() in ['number', 'numbers']: #can check for number OR numbers
+            mymap = map(lambda x: (x.Type == 'OneDigit') | (x.Type == 'TwoDigit'), self.tiles_in_bag)
             
-        elif Filter.lower() in ['operator', 'operators']: #more flexible query
-            mymap = map(lambda x: x.Type == 'Operator', self.TilesInBag)
+        elif myfilter.lower() in ['operator', 'operators']: #more flexible query
+            mymap = map(lambda x: x.Type == 'Operator', self.tiles_in_bag)
             
-        elif Filter.lower() in ['blank', 'blanks']: #same as above, more flexible query
-            mymap = map(lambda x: x.Type == 'Blank', self.TilesInBag)
+        elif myfilter.lower() in ['blank', 'blanks']: #same as above, more flexible query
+            mymap = map(lambda x: x.Type == 'Blank', self.tiles_in_bag)
         
         #if it's not a type filter, then checks for how many tiles match given denomination
-        elif Filter: 
-            if Filter in self.BaseTileDistribution.keys():
-                mymap = map(lambda x: x.POT == Filter, self.TilesInBag)
+        elif myfilter: 
+            if myfilter in self.base_tile_distribution.keys():
+                mymap = map(lambda x: x.POT == myfilter, self.tiles_in_bag)
             else:
                 print('This is not a tile denomation or tile type included in a standard A-Math set.')
                 print('Valid types to search for include OneDigit, TwoDigit, number, Operator and Blank.')
                 return
             
         else: # if no filter is given, just counts how many tiles are in the bag
-            mymap = map(lambda x: True, self.TilesInBag)
+            mymap = map(lambda x: True, self.tiles_in_bag)
             
         num = sum(mymap)
         return num  
             
         
-    def AddTileToBag(self, Denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
+    def add_tile_to_bag(self, denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
         
         try:
             #order matters on next line - checks for key error first before trying to see how many are in bag
-            if self.BaseTileDistribution[Denomination] <= self.HowManyInBag(Denomination):
-                print('WARNING: You are adding another', Denomination, 'even though this exceeds the standard distribution.')
+            if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
+                print('WARNING: You are adding another', denomination, 'even though this exceeds the standard distribution.')
                 override = input('Are you sure you want to continue? (n)o or (y)es:')
             
                 if override.lower() not in ['y', 'yes']:
                     print('Did not add tile in question.')
                     return
         
-            self.TilesInBag.append(Tile.Tile(Denomination))
+            self.tiles_in_bag.append(Tile(denomination))
         
         except KeyError:
             print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
-    def PrintBag(self):   #Print out contents of tilebag           
+            
+    def print_bag(self):   #Print out contents of tilebag           
     
-        #SortedBag = self.BaseTileDistribution.keys()
+        sorted_bag = self.base_tile_distribution.keys()
     
-        for Denomination in sorted(self.BaseTileDistribution, key = lambda x: (x.Type, x.POT ))):
-            nn = self.HowManyInBag(Denomination)
-            print((nn-1) * (Denomination + ",") + Denomination)
+        for denomination in sorted(self.base_tile_distribution, key = lambda x: (Tile.return_type(denomination), x)):
+            nn = self.how_many_in_bag(denomination)
+            print((nn-1) * (denomination + ",") + denomination)
             
                 
     #def DrawTile(self, TileDesired = 'rand'):
