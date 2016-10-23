@@ -88,8 +88,14 @@ class Tilebag:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
-    #def PrintBag:   #Print out contents of tilebag           
-                
+    def PrintBag(self):   #Print out contents of tilebag           
+    
+        #SortedBag = self.BaseTileDistribution.keys()
+    
+        for Denomination in sorted(self.BaseTileDistribution, key = lambda x: (x.Type, x.POT ))):
+            nn = self.HowManyInBag(Denomination)
+            print((nn-1) * (Denomination + ",") + Denomination)
+            
                 
     #def DrawTile(self, TileDesired = 'rand'):
 

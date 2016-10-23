@@ -39,3 +39,17 @@ class Tile:
                 
         else: #exhausted all other options. Once you eliminate the impossible, whatever remains, no matter how improbable, must be the truth. Er, type.
             return 'Operator'
+        
+    def ReturnType(Denomination):
+        if Denomination == '?':
+            return 'Blank'
+
+        #Check if integer, and if so, check if one or two digits - two digit numbers cannot be concatenated with other numbers.
+        elif str.isdigit(Denomination):
+            if len(self.POT) == 1:
+                return 'OneDigit'
+            else:
+                return 'TwoDigit'
+
+        else: #exhausted all other options. Once you eliminate the impossible, whatever remains, no matter how improbable, must be the truth. Er, type.
+            return 'Operator'
