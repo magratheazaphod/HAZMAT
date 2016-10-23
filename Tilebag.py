@@ -53,7 +53,7 @@ class Tilebag:
         #if it's not a type filter, then checks for how many tiles match given denomination
         elif myfilter: 
             if myfilter in self.base_tile_distribution.keys():
-                mymap = map(lambda x: x.POT == myfilter, self.tiles_in_bag)
+                mymap = map(lambda x: x.pot == myfilter, self.tiles_in_bag)
             else:
                 print('This is not a tile denomation or tile type included in a standard A-Math set.')
                 print('Valid types to search for include OneDigit, TwoDigit, number, Operator and Blank.')
@@ -88,9 +88,9 @@ class Tilebag:
             
     def print_bag(self):   #Print out contents of tilebag           
     
-        sorted_bag = self.base_tile_distribution.keys()
+        sorted_bag = sorted(self.base_tile_distribution, key = lambda x: (Tile.return_type(x), x))
     
-        for denomination in sorted(self.base_tile_distribution, key = lambda x: (Tile.return_type(denomination), x)):
+        for denomination in sorted_bag:
             nn = self.how_many_in_bag(denomination)
             print((nn-1) * (denomination + ",") + denomination)
             
@@ -100,7 +100,7 @@ class Tilebag:
         #if thing in self: some_list.remove(thing)
             
         #TileDrawn = rnd.choice(self.TilesInBag)
-        #self.Distribution[TileDrawn.POT] -= 1
+        #self.Distribution[TileDrawn.pot] -= 1
         
     #def SwapTiles(self):        
     

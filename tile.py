@@ -15,15 +15,15 @@ class Tile:
     
     def __init__(self, printed_on_tile):
         
-        #Trying to be forgiving - if we just provide a number instead of number-as-string, converts to string
-        if str.isdigit(printed_on_tile):
+        #if we just provide a number instead of number-as-string, converts to string
+        if type(printed_on_tile) == int:
             self.pot = str(printed_on_tile)
         else:
             self.pot = printed_on_tile 
         
         #Assign point value (checks if actually a real tile!)
         try:
-            self.point_value = self.point_value_dict[printed_on_tile]
+            self.point_value = self.point_value_dict[self.pot]
         except KeyError:
             print("WARNING: The tile you've attempted to create doesn't exist in A-Math!")
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
