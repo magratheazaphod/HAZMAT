@@ -1,22 +1,21 @@
 ## Third module implemented for the HAZMAT A-math solver - manages rack dynamics.
 ## Each game of A-Math will contain two rack objects (although, no reason not to allow more for multiplayer games).
+## The rules of A-Math dictate that racks should contain 8 tiles at all times if possible.
+
+from Tile import Tile
+from Tilebag import Tilebag
 
 class Rack:
     
     def __init__(self):
         
-        #if we just provide a number instead of number-as-string, converts to string
-        if type(printed_on_tile) == int:
-            self.pot = str(printed_on_tile)
-        else:
-            self.pot = printed_on_tile 
+        self.tiles_on_rack = []  #will be filled with Tile objects by a Game
         
-        #Assign point value (checks if actually a real tile!)
-        try:
-            self.point_value = self.point_value_dict[self.pot]
-        except KeyError:
-            print("WARNING: The tile you've attempted to create doesn't exist in A-Math!")
-            print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
-            print("Tile was NOT fully created.")
-            
-        self.tile_type = self.determine_type()
+        
+    ## default: Fill rack back up to 8 tiles.
+    def fill_rack(self, current_tilebag):
+        return 0
+        
+    ## set rack to input letters.
+    def set_rack_to_input(self, current_tilebag):
+        return 1

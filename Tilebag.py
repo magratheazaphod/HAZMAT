@@ -76,6 +76,7 @@ class Tilebag:
         num = sum(mymap)
         return num  
             
+        
     #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag    
     def add_tile_to_bag(self, denomination): 
         
@@ -96,6 +97,7 @@ class Tilebag:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
+            
     #Print out contents of tilebag  
     def print_bag(self):            
     
@@ -106,6 +108,7 @@ class Tilebag:
             
             if nn > 0: #shouldn't print line at all if none of that tile remaining in bag
                 print((nn-1) * (denomination + ",") + denomination)
+            
             
     #returns a tile object that will get added to a Rack object, and also updates Tilebag to remove chosen tile.    
     def draw_tile(self, tile_desired = 'rand'):
@@ -141,6 +144,7 @@ class Tilebag:
         #unless we've already cleared out because of an exception, remove the chosen tile from bag
         self.tiles_in_bag.remove(tile_drawn)        
         return tile_drawn
+        
         
     #following function is distinct from the exchange_tiles function in the Rack class
     #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
