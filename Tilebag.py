@@ -100,25 +100,43 @@ class Tilebag:
     
         for denomination in sorted_bag:
             nn = self.how_many_in_bag(denomination)
-            print((nn-1) * (denomination + ",") + denomination)
+            
+            if nn > 0: #shouldn't print line at all if none of that tile remaining in bag
+                print((nn-1) * (denomination + ",") + denomination)
             
     #returns a tile object that will get added to a Rack object, and also updates Tilebag to remove chosen tile.    
-    def draw_tile(self, TileDesired = 'rand'):
+    def draw_tile(self, tile_desired = 'rand'):
 
         #if thing in self: some_list.remove(thing)
-        if TileDesired != 'rand':
-            try:
-                [ for tile in self.tiles_in_bag.denomination
-                
+        if tile_desired != 'rand':
             
-            except KeyError:
+            if str(tile_desired) not in Tile.point_value_dict.keys():
                 print("WARNING: The tile you've attempted to draw doesn't exist in A-Math!")
                 print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
+                return
+            
+            else:
+            
+                try:
+                    #using next should be consistently faster than using a map
+                    #note automatic attempt at conversion to str in case input was int.
+                    tile_drawn = next(tile for tile in self.tiles_in_bag \
+                                      if tile.pot == str(tile_desired))
+
+                #if we try to draw a tile that doesn't exist in an A-Math set
+
+
+                #if there are none of the desired tile left in the tilebag
+                except StopIteration:
+                    print('There are no more of the desired tile in this tilebag. No tile drawn.')
+                    return
             
         else:    
-            tile_drawn = rnd.choice(self.TilesInBag)
-        #self.Distribution[TileDrawn.pot] -= 1
+            #choose random tile object, then remove this object from tilebag.
+            tile_drawn = rnd.choice(self.tiles_in_bag)
         
+        #unless we've already cleared out because of an exception, remove the chosen tile from bag
+        self.tiles_in_bag.remove(tile_drawn)        
         return tile_drawn
         
     #def exchange_tiles(self):        
