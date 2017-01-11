@@ -2,10 +2,18 @@
 #A collection of Tile objects and related operations (see class).
 #Also attempted to implement as a dictionary showing quantities of each tile remaining, but this way makes random drawing easier.
 
-#Functions: -FillBag (fill a brand new tile bag with Tile objects)
-#           -HowManyInBag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
-#           -DrawTile (Returns tile object and updated tilebag with tile removed)
-#           -Exchange (Replace inputted tiles with new random tiles
+#Functions: -fill_bag (fill a brand new tile bag with Tile objects)
+#           -how_many_in_bag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
+#           -add_tile_to_bag (adds a tile with specific domination to tilebag object)
+#           -print_bag (prints all of the tiles currently contained in a tilebag object)
+#           -draw_tile (Returns tile object and updated tilebag with tile removed)
+#           -exchange_tile (Replace inputted tiles with new random tiles
+
+
+### OUTSTANDING ISSUES
+# 1) Get tilebag to print in a more sensible order (in fact, could even make this order customizable)
+# 2) Should allow for interchangeability between *|/ and */, and also +|- and +- (the Chew convention)
+
 
 from Tile import Tile
 import numpy.random as rnd
@@ -65,8 +73,8 @@ class Tilebag:
         num = sum(mymap)
         return num  
             
-        
-    def add_tile_to_bag(self, denomination): #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
+    #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag    
+    def add_tile_to_bag(self, denomination): 
         
         try:
             #order matters on next line - checks for key error first before trying to see how many are in bag
@@ -85,8 +93,8 @@ class Tilebag:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
-            
-    def print_bag(self):   #Print out contents of tilebag           
+    #Print out contents of tilebag  
+    def print_bag(self):            
     
         sorted_bag = sorted(self.base_tile_distribution, key = lambda x: (Tile.return_type(x), x))
     
@@ -94,13 +102,24 @@ class Tilebag:
             nn = self.how_many_in_bag(denomination)
             print((nn-1) * (denomination + ",") + denomination)
             
-                
-    #def DrawTile(self, TileDesired = 'rand'):
+    #returns a tile object that will get added to a Rack object, and also updates Tilebag to remove chosen tile.    
+    def draw_tile(self, TileDesired = 'rand'):
 
         #if thing in self: some_list.remove(thing)
+        if TileDesired != 'rand':
+            try:
+                [ for tile in self.tiles_in_bag.denomination
+                
             
-        #TileDrawn = rnd.choice(self.TilesInBag)
+            except KeyError:
+                print("WARNING: The tile you've attempted to draw doesn't exist in A-Math!")
+                print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
+            
+        else:    
+            tile_drawn = rnd.choice(self.TilesInBag)
         #self.Distribution[TileDrawn.pot] -= 1
         
-    #def SwapTiles(self):        
+        return tile_drawn
+        
+    #def exchange_tiles(self):        
     
