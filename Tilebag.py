@@ -7,12 +7,15 @@
 #           -add_tile_to_bag (adds a tile with specific domination to tilebag object)
 #           -print_bag (prints all of the tiles currently contained in a tilebag object)
 #           -draw_tile (Returns tile object and updated tilebag with tile removed)
-#           -exchange_tile (Replace inputted tiles with new random tiles
+#           -swap_tiles (Takes in a list of tile objects, returns a list of tile objects of equal length)
 
 
 ### OUTSTANDING ISSUES
 # 1) Get tilebag to print in a more sensible order (in fact, could even make this order customizable)
 # 2) Should allow for interchangeability between *|/ and */, and also +|- and +- (the Chew convention)
+# 3) Create definition file that makes dictionary eventually customizable?
+# 4) Introduce manual override to allow +, - and similar symbols to be input directly into functions
+# (in other words, automatic type conversion)
 
 
 from Tile import Tile
@@ -139,5 +142,9 @@ class Tilebag:
         self.tiles_in_bag.remove(tile_drawn)        
         return tile_drawn
         
-    #def exchange_tiles(self):        
-    
+    #following function is distinct from the exchange_tiles function in the Rack class
+    #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
+    def swap_tiles(self, tiles_back_to_bag):
+        # the [tiles_back_to_bag] syntax below is necessary in case just a single tile is being swapped.
+        [ self.add_tile_to_bag(tile.pot) for tile in [tiles_back_to_bag] ]
+        return [ self.draw_tile() for i in range(len([tiles_back_to_bag])) ]
