@@ -16,6 +16,7 @@
 # 3) Create definition file that makes dictionary eventually customizable?
 # 4) Introduce manual override to allow +, - and similar symbols to be input directly into functions
 # (in other words, automatic type conversion)
+# 5) Option to print tile bag as how many of each tile are left (as opposed to just printing out every remaining tile)
 
 
 from Tile import Tile
@@ -43,23 +44,25 @@ class Tilebag:
                 
     def how_many_in_bag(self, myfilter=""): #check how many tiles there are of a particular denomination in the bag
         
-        if type(myfilter) == int: #if user put in an integer, start by converting to a string
-            Filter = str(Filter)
+        #if user put in an integer, start by converting to a string
+        if type(myfilter) == int: 
+            myfilter = str(myfilter)
         
+        #checks first for whether we're looking up how many of a particular TYPE of tile remain
         if myfilter.lower() == 'onedigit': #case insensitive
-            mymap = map(lambda x: x.Type == 'OneDigit', self.tiles_in_bag)
+            mymap = map(lambda x: x.tile_type == 'OneDigit', self.tiles_in_bag)
         
         elif myfilter.lower() == 'twodigit': #case insensitive
-            mymap = map(lambda x: x.Type == 'TwoDigit', self.tiles_in_bag)
+            mymap = map(lambda x: x.tile_type == 'TwoDigit', self.tiles_in_bag)
         
         elif myfilter.lower() in ['number', 'numbers']: #can check for number OR numbers
-            mymap = map(lambda x: (x.Type == 'OneDigit') | (x.Type == 'TwoDigit'), self.tiles_in_bag)
+            mymap = map(lambda x: (x.tile_type == 'OneDigit') | (x.tile_type == 'TwoDigit'), self.tiles_in_bag)
             
         elif myfilter.lower() in ['operator', 'operators']: #more flexible query
-            mymap = map(lambda x: x.Type == 'Operator', self.tiles_in_bag)
+            mymap = map(lambda x: x.tile_type == 'Operator', self.tiles_in_bag)
             
         elif myfilter.lower() in ['blank', 'blanks']: #same as above, more flexible query
-            mymap = map(lambda x: x.Type == 'Blank', self.tiles_in_bag)
+            mymap = map(lambda x: x.tile_type == 'Blank', self.tiles_in_bag)
         
         #if it's not a type filter, then checks for how many tiles match given denomination
         elif myfilter: 
@@ -80,6 +83,8 @@ class Tilebag:
     #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag    
     def add_tile_to_bag(self, denomination): 
         
+        denomination = str(denomination) #in case input was in int form
+        
         try:
             #order matters on next line - checks for key error first before trying to see how many are in bag
             if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
@@ -99,15 +104,20 @@ class Tilebag:
             
             
     #Print out contents of tilebag  
-    def print_bag(self):            
+    def print_bag(self, print_number_left = 'no'):            
     
         sorted_bag = sorted(self.base_tile_distribution, key = lambda x: (Tile.return_type(x), x))
     
         for denomination in sorted_bag:
             nn = self.how_many_in_bag(denomination)
             
-            if nn > 0: #shouldn't print line at all if none of that tile remaining in bag
-                print((nn-1) * (denomination + ",") + denomination)
+            ## optional more compact way of printing tile bag - shows how many of each tile remain.
+            if print_number_left in ['num','numbers']:
+                print(denomination + ':', nn)
+                
+            else: #default printing - shows each individual tile discretely (Quackle-style)
+                if nn > 0: #shouldn't print line at all if none of that tile remaining in bag
+                    print((nn-1) * (denomination + ",") + denomination)
             
             
     #returns a tile object that will get added to a Rack object, and also updates Tilebag to remove chosen tile.    
