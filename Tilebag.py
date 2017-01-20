@@ -81,20 +81,27 @@ class Tilebag:
         return num  
             
         
-    #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag    
-    def add_tile_to_bag(self, denomination): 
+    #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
+    #recently added: an override variable which, if set to yes, adds tile automatically
+    #EVEN IF tilebag would now be overfilled with tile in question.
+    
+    def add_tile_to_bag(self, denomination, force='n'): 
         
         denomination = str(denomination) #in case input was in int form
         
-        try:
-            #order matters on next line - checks for key error first before trying to see how many are in bag
-            if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
-                print('WARNING: You are adding another', denomination, 'even though this exceeds the standard distribution.')
-                override = input('Are you sure you want to continue? (n)o or (y)es:')
-            
-                if override.lower() not in ['y', 'yes']:
-                    print('Did not add tile in question.')
-                    return
+        try: ## fails if requested tile denomination doesn't exist in set.
+
+            ## function can be called with variable force set to y/yes, in which case tile is added
+            ## no matter what with no warning message.
+            if force.lower() not in ['y', 'yes']:
+                if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
+                    print('WARNING: You are adding another', denomination, \
+                          'even though this exceeds the standard distribution.')
+                    override = input('Are you sure you want to continue? (n)o or (y)es:')
+
+                    if override.lower() not in ['y', 'yes']:
+                        print('Did not add tile in question.')
+                        return
         
             self.tiles_in_bag.append(Tile(denomination))
         
@@ -156,6 +163,9 @@ class Tilebag:
             
             
     #returns a tile object that will get added to a Rack object, and also updates Tilebag to remove chosen tile.    
+    # another way of achieving this would've been to use my handy how_many_in_bag function and check if 0
+    # however, I believe that using the next function should end up being faster, although I did not test this.
+    
     def draw_tile(self, tile_desired = 'rand'):
 
         #if thing in self: some_list.remove(thing)
@@ -168,7 +178,6 @@ class Tilebag:
                 return
             
             else:
-            
                 try:
                     #using next should be consistently faster than using a map
                     #note automatic attempt at conversion to str in case input was int.
@@ -176,12 +185,20 @@ class Tilebag:
                                       if tile.pot == str(tile_desired))
 
                 #if there are none of the desired tile left in the tilebag
+                #give option of expanding tilebag with additional tile of interest.
                 except StopIteration:
-                    print('There are no more of the desired tile in this tilebag. No tile drawn.')
-                    return
-                
-                ## another way of achieving this would've been to use my handy how_many_in_bag function and check if 0
-                ## however, I believe that using the next function should end up being faster, although I did not test this.
+                    print('There are no more',tile_desired,'tiles in this tilebag.')
+                    print('Do you wish to create an additional',tile_desired,'tile?')
+                    input('CAUTION: will permanently expand tilebag.')
+                    
+                    if override.lower() not in ['y', 'yes']:
+                        print('Unable to draw a',tile_desired,'tile.')
+                        return
+                    
+                    else:
+                        tb.add_tile_to_bag(tile_desired,'y') #the 'y' enables force-add
+                        #below, simple recursive call - rerun function with newly expanded tilebag
+                        return self.draw_tile(tile_desired)
             
         else:    
             #choose random tile object, then remove this object from tilebag.
@@ -194,7 +211,9 @@ class Tilebag:
         
     #following function is distinct from the exchange_tiles function in the Rack class
     #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
+    ## quick edit 1/19/17: switched to use add_tile_object_to_bag instead of add_tile_to_bag
+    
     def swap_tiles(self, tiles_back_to_bag):
         # the [tiles_back_to_bag] syntax below is necessary in case just a single tile is being swapped.
-        [ self.add_tile_to_bag(tile.pot) for tile in [tiles_back_to_bag] ]
+        [ self.add_tile_object_to_bag(tile) for tile in [tiles_back_to_bag] ]
         return [ self.draw_tile() for i in range(len([tiles_back_to_bag])) ]

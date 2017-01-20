@@ -45,9 +45,11 @@ class Rack:
         #[ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
 
                   
-    ## print out tiles on rack nicely and in some order of choice.
+    ## print out tiles on rack nicely
+    ## eventually, will allow user to change display order.
     def print_tiles_on_rack(self):
         print(' '.join([ x.pot for x in self.tiles_on_rack ]))
+        
     
     def exchange_tiles(self, tb):
         return 3
