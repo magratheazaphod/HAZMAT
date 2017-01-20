@@ -2,11 +2,12 @@
 #A collection of Tile objects and related operations (see class).
 #Also attempted to implement as a dictionary showing quantities of each tile remaining, but this way makes random drawing easier.
 
-#Functions: -fill_bag (fill a brand new tile bag with Tile objects)
-#           -how_many_in_bag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
+#Functions: 
 #           -add_tile_to_bag (adds a tile with specific domination to tilebag object)
-#           -print_bag (prints all of the tiles currently contained in a tilebag object)
 #           -draw_tile (Returns tile object and updated tilebag with tile removed)
+#           -fill_bag (fill a brand new tile bag with Tile objects)
+#           -how_many_in_bag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
+#           -print_bag (prints all of the tiles currently contained in a tilebag object)
 #           -swap_tiles (Takes in a list of tile objects, returns a list of tile objects of equal length)
 
 
@@ -102,6 +103,31 @@ class Tilebag:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             print("Tile was NOT added to tilebag.")
             
+          
+    #very similar to above, but in cases where we have existing Tiles on racks and want to return them to bag, want to be able
+    #to use a function to put the Tile object in question directly back in the bag without having to create a new Tile.
+    def add_tile_object_to_bag(self, tile_object): 
+        
+        denomination = tile_object.pot #in case input was in int form
+        
+        try:
+            #order matters on next line - checks for key error first before trying to see how many are in bag
+            if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
+                print('WARNING: You are adding another', denomination, 'tile even though\
+                this exceeds the standard distribution.')
+                override = input('Are you sure you want to continue? (n)o or (y)es:')
+            
+                if override.lower() not in ['y', 'yes']:
+                    print('Did not add tile in question.')
+                    return
+        
+            self.tiles_in_bag.append(tile_object)
+        
+        except KeyError:
+            print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
+            print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
+            print("Tile was NOT added to tilebag.")
+            
             
     #Print out contents of tilebag  
     def print_bag(self, print_number_left = 'no'):            
@@ -126,6 +152,7 @@ class Tilebag:
         #if thing in self: some_list.remove(thing)
         if tile_desired != 'rand':
             
+            #if we try to draw a tile that doesn't exist in an A-Math set
             if str(tile_desired) not in Tile.point_value_dict.keys():
                 print("WARNING: The tile you've attempted to draw doesn't exist in A-Math!")
                 print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
@@ -139,13 +166,13 @@ class Tilebag:
                     tile_drawn = next(tile for tile in self.tiles_in_bag \
                                       if tile.pot == str(tile_desired))
 
-                #if we try to draw a tile that doesn't exist in an A-Math set
-
-
                 #if there are none of the desired tile left in the tilebag
                 except StopIteration:
                     print('There are no more of the desired tile in this tilebag. No tile drawn.')
                     return
+                
+                ## another way of achieving this would've been to use my handy how_many_in_bag function and check if 0
+                ## however, I believe that using the next function should end up being faster, although I did not test this.
             
         else:    
             #choose random tile object, then remove this object from tilebag.
