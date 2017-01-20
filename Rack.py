@@ -89,8 +89,8 @@ class Rack:
                   
     ## function to print out tiles on rack nicely
     ## eventually, will allow user to change display order.
-    def print_tiles_on_rack(self):
-        sorted_rack = sorted(self.tiles_on_rack, key = lambda x: (x.tile_type, x))
+    def print_rack(self):
+        sorted_rack = sorted(self.tiles_on_rack, key = lambda x: (x.tile_type, x.pot))
         print(' '.join([ x.pot for x in sorted_rack ]))
         
     
