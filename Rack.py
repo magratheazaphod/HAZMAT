@@ -47,7 +47,7 @@ class Rack:
                   
     ## print out tiles on rack nicely and in some order of choice.
     def print_tiles_on_rack(self):
-        print(','.join([ x.pot for x in self.tiles_on_rack ]))
+        print(' '.join([ x.pot for x in self.tiles_on_rack ]))
     
     def exchange_tiles(self, tb):
         return 3

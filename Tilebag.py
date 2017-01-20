@@ -108,13 +108,22 @@ class Tilebag:
     #to use a function to put the Tile object in question directly back in the bag without having to create a new Tile.
     def add_tile_object_to_bag(self, tile_object): 
         
-        denomination = tile_object.pot #in case input was in int form
-        
+        ## easy to confuse this function and previous add_tile_to_bag function - check right away that we're actually dealing
+        ## with a Tile object.
+        try:
+            denomination = tile_object.pot #in case input was in int form
+        except AttributeError:
+            print("The add_tile_object_to_bag function adds Tile objects to tilebag.")
+            print("However, you've input another variable type.")
+            print("If you're trying to add a tile with a particular denomination, use add_tile_to_bag instead.")
+            return
+            
+        ## following code basically identical to before: checks if tile bag already maxed out on given denomination,
+        ## and also checks if denomination on tile is actually legal in A-Math.
         try:
             #order matters on next line - checks for key error first before trying to see how many are in bag
             if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
-                print('WARNING: You are adding another', denomination, 'tile even though\
-                this exceeds the standard distribution.')
+                print('WARNING: You are adding another', denomination, 'tile even though this exceeds the standard distribution.')
                 override = input('Are you sure you want to continue? (n)o or (y)es:')
             
                 if override.lower() not in ['y', 'yes']:
