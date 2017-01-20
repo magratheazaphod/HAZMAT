@@ -9,6 +9,9 @@
 ##    -print_tiles_on_rack: Print out all of the tiles currently on a given rack.
 ##    -set_rack_to_input: manually change rack to listed input.
 
+## ONGOING PROBLEMS:
+## 1) The tiles that you want might be on the other players rack - have to be able to check for that case.
+
 from Tile import Tile
 from Tilebag import Tilebag
 
@@ -44,6 +47,7 @@ class Rack:
         #[ tb.add_tile_to_bag(old_tile.pot) for old_tile in self.tiles_on_rack ]  ## 
         #[ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
 
+    
                   
     ## print out tiles on rack nicely
     ## eventually, will allow user to change display order.

@@ -18,6 +18,7 @@
 # 4) Introduce manual override to allow +, - and similar symbols to be input directly into functions
 # (in other words, automatic type conversion)
 # 5) Option to print tile bag as how many of each tile are left (as opposed to just printing out every remaining tile)
+# 6) Any way to get add_tile_to_bag and add_tile_object_to_bag to share error checks without rewriting twice? Rename add_tile_object_to_bag to add_existing_tile_object_to_bag, or too verbose?
 
 
 from Tile import Tile
@@ -81,30 +82,25 @@ class Tilebag:
         return num  
             
         
-    #checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
-    #recently added: an override variable which, if set to yes, adds tile automatically
-    #EVEN IF tilebag would now be overfilled with tile in question.
-    
-    def add_tile_to_bag(self, denomination, force='n'): 
+    #adds tile with given denomination to tilebag.
+    #also, checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
+    def add_tile_to_bag(self, denomination): 
         
         denomination = str(denomination) #in case input was in int form
         
         try: ## fails if requested tile denomination doesn't exist in set.
 
-            ## function can be called with variable force set to y/yes, in which case tile is added
-            ## no matter what with no warning message.
-            if force.lower() not in ['y', 'yes']:
-                if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
-                    print('WARNING: You are adding another', denomination, \
-                          'even though this exceeds the standard distribution.')
-                    override = input('Are you sure you want to continue? (n)o or (y)es:')
+            if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
+                print('WARNING: You are adding another', denomination, \
+                      'even though this exceeds the standard distribution.')
+                override = input('Are you sure you want to continue? (n)o or (y)es:')
 
-                    if override.lower() not in ['y', 'yes']:
-                        print('Did not add tile in question.')
-                        return
+                if override.lower() not in ['y', 'yes']:
+                    print('Did not add tile in question.')
+                    return
         
             self.tiles_in_bag.append(Tile(denomination))
-        
+            
         except KeyError:
             print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
@@ -188,16 +184,16 @@ class Tilebag:
                 #give option of expanding tilebag with additional tile of interest.
                 except StopIteration:
                     print('There are no more',tile_desired,'tiles in this tilebag.')
-                    print('Do you wish to create an additional',tile_desired,'tile?')
-                    input('CAUTION: will permanently expand tilebag.')
+                    print('Do you wish to create an additional',tile_desired,'tile? (n)o or (y)es')
+                    override = input('CAUTION: will permanently expand tilebag.')
                     
                     if override.lower() not in ['y', 'yes']:
                         print('Unable to draw a',tile_desired,'tile.')
                         return
                     
                     else:
-                        tb.add_tile_to_bag(tile_desired,'y') #the 'y' enables force-add
-                        #below, simple recursive call - rerun function with newly expanded tilebag
+                        self.add_tile_to_bag(tile_desired)
+                        #below, recursive call - rerun function with newly expanded tilebag
                         return self.draw_tile(tile_desired)
             
         else:    
