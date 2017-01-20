@@ -3,7 +3,7 @@
 #Also attempted to implement as a dictionary showing quantities of each tile remaining, but this way makes random drawing easier.
 
 #Functions: 
-#           -add_tile_to_bag (adds a tile with specific domination to tilebag object)
+#           -add_tile_to_bag (adds a Tile object to tilebag object)
 #           -draw_tile (Returns tile object and updated tilebag with tile removed)
 #           -fill_bag (fill a brand new tile bag with Tile objects)
 #           -how_many_in_bag (check how many tiles there are total in bag, or check particular type of tile or particular denomination
@@ -18,7 +18,7 @@
 # 4) Introduce manual override to allow +, - and similar symbols to be input directly into functions
 # (in other words, automatic type conversion)
 # 5) Option to print tile bag as how many of each tile are left (as opposed to just printing out every remaining tile)
-# 6) Any way to get add_tile_to_bag and add_tile_object_to_bag to share error checks without rewriting twice? Rename add_tile_object_to_bag to add_existing_tile_object_to_bag, or too verbose?
+
 
 
 from Tile import Tile
@@ -41,7 +41,7 @@ class Tilebag:
                         
         for k, v in self.base_tile_distribution.items():
             for i in range(v): #add multiple copies of each tile to tilebag depending on how many are supposed to be in there
-                self.add_tile_to_bag(k) #handled in external function
+                self.add_tile_to_bag(Tile(k)) #handled in external function
                
                 
     def how_many_in_bag(self, myfilter=""): #check how many tiles there are of a particular denomination in the bag
@@ -81,44 +81,19 @@ class Tilebag:
         num = sum(mymap)
         return num  
             
-        
-    #adds tile with given denomination to tilebag.
-    #also, checks if we're somehow trying to add a tile beyond what's supposed to be in the bag
-    def add_tile_to_bag(self, denomination): 
-        
-        denomination = str(denomination) #in case input was in int form
-        
-        try: ## fails if requested tile denomination doesn't exist in set.
-
-            if self.base_tile_distribution[denomination] <= self.how_many_in_bag(denomination):
-                print('WARNING: You are adding another', denomination, \
-                      'even though this exceeds the standard distribution.')
-                override = input('Are you sure you want to continue? (n)o or (y)es:')
-
-                if override.lower() not in ['y', 'yes']:
-                    print('Did not add tile in question.')
-                    return
-        
-            self.tiles_in_bag.append(Tile(denomination))
-            
-        except KeyError:
-            print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
-            print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
-            print("Tile was NOT added to tilebag.")
-            
           
     #very similar to above, but in cases where we have existing Tiles on racks and want to return them to bag, want to be able
     #to use a function to put the Tile object in question directly back in the bag without having to create a new Tile.
-    def add_tile_object_to_bag(self, tile_object): 
+    def add_tile_to_bag(self, added_tile): 
         
         ## easy to confuse this function and previous add_tile_to_bag function - check right away that we're actually dealing
         ## with a Tile object.
         try:
-            denomination = tile_object.pot #in case input was in int form
+            denomination = added_tile.pot #in case input was in int form
+            
         except AttributeError:
-            print("The add_tile_object_to_bag function adds Tile objects to tilebag.")
-            print("However, you've input another variable type.")
-            print("If you're trying to add a tile with a particular denomination, use add_tile_to_bag instead.")
+            print("The add_tile_to_bag function takes Tile type objects as input.")
+            print("Please check that you haven't tried to use a different type.")
             return
             
         ## following code basically identical to before: checks if tile bag already maxed out on given denomination,
@@ -192,7 +167,7 @@ class Tilebag:
                         return
                     
                     else:
-                        self.add_tile_to_bag(tile_desired)
+                        self.add_tile_to_bag(Tile(tile_desired))
                         #below, recursive call - rerun function with newly expanded tilebag
                         return self.draw_tile(tile_desired)
             
@@ -207,9 +182,8 @@ class Tilebag:
         
     #following function is distinct from the exchange_tiles function in the Rack class
     #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
-    ## quick edit 1/19/17: switched to use add_tile_object_to_bag instead of add_tile_to_bag
     
     def swap_tiles(self, tiles_back_to_bag):
         # the [tiles_back_to_bag] syntax below is necessary in case just a single tile is being swapped.
-        [ self.add_tile_object_to_bag(tile) for tile in [tiles_back_to_bag] ]
+        [ self.add_tile_to_bag(tile) for tile in [tiles_back_to_bag] ]
         return [ self.draw_tile() for i in range(len([tiles_back_to_bag])) ]

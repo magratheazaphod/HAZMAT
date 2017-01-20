@@ -47,7 +47,6 @@ class Rack:
         #[ tb.add_tile_to_bag(old_tile.pot) for old_tile in self.tiles_on_rack ]  ## 
         #[ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
 
-    
                   
     ## print out tiles on rack nicely
     ## eventually, will allow user to change display order.
