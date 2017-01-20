@@ -10,7 +10,8 @@
 ##    -set_rack_to_input: manually change rack to listed input.
 
 ## ONGOING PROBLEMS:
-## 1) The tiles that you want might be on the other players rack - have to be able to check for that case.
+## 1) The tiles that you want might be on the other players rack - have to be able to check for that case. May need a function like 'print_unseen'
+## 2) Need to error test remove_tile and set_rack_to_input functions.
 
 from Tile import Tile
 from Tilebag import Tilebag
@@ -31,22 +32,28 @@ class Rack:
         
         
     ## set rack to input letters, with desired letters delimited by commas.
-    def set_rack_to_input(self, tb, rack):
+    def set_rack_to_input(self, target_rack, tb):
         
         # accept either spaces or commas to separate input.
-        desired_rack = [ x.strip() for x in rack.replace(',',' ').split(' ') ]
+        parsed_rack = [ x.strip() for x in target_rack.replace(',',' ').split(' ') ]
         
-        if len(desired_rack) > 8:
-            print('Requested rack with over 8 tiles - are you sure?')
-            override = input('Are you sure you want to continue? (n)o or (y)es:')
+        if len(parsed_rack) > 8:
+            override = input('Requested rack with over 8 tiles - are you sure? (n)o or (y)es:')
                   
             if override.lower() not in ['y', 'yes']:
                 print('Did not adjust rack.')
                 return
+            
+        print(parsed_rack)
 
-        tiles_back_to_bag = self.remove_tiles_from_rack()
-        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## 
-        [ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
+        self.print_rack()
+        tiles_back_to_bag = self.remove_tiles_from_rack() ## step 1 - remove tiles from rack
+        self.print_rack()
+        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return to tilebag
+        new_tiles = [ tb.draw_tile(new_tile) for new_tile in parsed_rack ] ## step 3 - draw new tiles
+        print(new_tiles)
+        self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge Nones from unsuccessful drawing.
+        print(self.tiles_on_rack)
         ## not positive that the previous line will work - should be careful with
         ## how None-types are handled.
       
@@ -54,29 +61,32 @@ class Rack:
     # very similar to draw_tile module, except that we require a definite input of what tiles are being removed (no random option)
     # relies on calling function remove_single_tile for all tiles of interest
     # DEFAULT: if input isn't specified, clear rack of ALL tiles.
-    def remove_tiles_from_rack(self, tiles_desired = 'all'):
+    def remove_tiles_from_rack(self, target_tiles = 'all'):
         
         removed_tiles = []
         
         ## default case - empty the rack and throw all tiles back into tilebag
-        if tiles_desired == 'all':
-            for nexttile in self.tiles_on_rack:
-                removed_tiles.append(self.remove_single_tile(nexttile))
-       
-        else:
-            #start by parsing input (allow for both comma and spaces
+        if target_tiles == 'all':
+            parsed_tiles = [ x.pot for x in self.tiles_on_rack ]
+        
+        else: ## allow for removal of specific tiles - comma- or space-delimited
+            parsed_tiles = [ x.strip() for x in target_tiles.replace(',',' ').split(' ') ]
             
-            for nexttile in tiles_desired:
-                 removed_tiles.append(self.remove_single_tile(nexttile))
-       
+        for next_tile in parsed_tiles:
+            removed_tiles.append(self.remove_single_tile(next_tile))
+
+        ## in case we unsuccessfully attempted to remove tiles, strip any Nones
+        removed_tiles = [x for x in removed_tiles if x is not None]    
         return removed_tiles
+    
     
     ##called above my remove_tiles_from_rack, removes a single tile from rack object.
     ##spits out the tile that was just removed from the rack.
-    def remove_single_tile(self, tile_desired):
-        
+    ##IMPORTANT: Input is not a Tile object, but the DENOMINATION of tile that we're looking for
+    def remove_single_tile(self, target_tile):
+                
         #if we try to draw a tile that doesn't exist in an A-Math set
-        if str(tile_desired) not in Tile.point_value_dict.keys():
+        if str(target_tile) not in Tile.point_value_dict.keys():
             print("WARNING: The tile you've attempted to retrieve from this rack doesn't exist in A-Math!")
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             return
@@ -85,7 +95,7 @@ class Rack:
             #using next should be consistently faster than using a map
             #note automatic attempt at conversion to str in case input was int.
             tile_chosen = next(tile for tile in self.tiles_on_rack \
-                              if tile.pot == str(tile_desired))
+                              if tile.pot == str(target_tile))
 
         #if there are none of the desired tile left in the tilebag
         #give option of expanding tilebag with additional tile of interest.
@@ -94,10 +104,10 @@ class Rack:
             return
           
         #unless we've already cleared out because of an exception, remove the chosen tile from bag and return the Tile object removed.
-        self.tiles_on_rack.remove(tile_drawn)
-        return tile_drawn
-        
+        self.tiles_on_rack.remove(tile_chosen)
+        return tile_chosen        
                   
+        
     ## function to print out tiles on rack nicely
     ## eventually, will allow user to change display order.
     def print_rack(self):
