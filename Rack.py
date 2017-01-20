@@ -19,6 +19,7 @@ from Tilebag import Tilebag
 class Rack:
     
     tile_limit = 8 #could change to 7 to make more similar to Scrabble!
+    exchange_cutoff = 5 #what is the minimum for unseen tiles for an exchange to be conducted?
     
     def __init__(self):
         self.tiles_on_rack = []  #will be filled with Tile objects by a Game calling function fill_rack.
@@ -115,5 +116,7 @@ class Rack:
         print(' '.join([ x.pot for x in sorted_rack ]))
         
     
+    ## relies on the versatile Tilebag.swap_tiles function
+    ## According to printed rules, exchanges can only happen with 5 or more tiles in bag.
     def exchange_tiles(self, tb):
         return 3
