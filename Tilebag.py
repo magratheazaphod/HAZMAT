@@ -183,7 +183,25 @@ class Tilebag:
     #following function is distinct from the exchange_tiles function in the Rack class
     #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
     
-    def swap_tiles(self, tiles_back_to_bag):
+    #swap_tiles is a more versatile function that handles getting tiles back in the bag and getting the right ones out.
+    #implementation is just using list comprehensions to automate calls of add_tile_to_bag and draw_tile.
+    
+    #input tiles_back_to_bag should be a list of Tile objects, while desired_tiles is a space- or comma-delimited string
+    #containing all the desired tiles.
+    #Object returned is a list of Tile objects.
+    
+    def swap_tiles(self, tiles_back_to_bag, desired_tiles = 'rand'):
+        
         # the [tiles_back_to_bag] syntax below is necessary in case just a single tile is being swapped.
         [ self.add_tile_to_bag(tile) for tile in [tiles_back_to_bag] ]
-        return [ self.draw_tile() for i in range(len([tiles_back_to_bag])) ]
+        
+        ## default case - draw as many tiles randomly for tilebag as necessary to replace those that are being swapped back
+        if tile_desired == 'rand':
+            return [ self.draw_tile() for x in range(len([tiles_back_to_bag])) ]
+  
+        ## allowing for greater versatillity, we can also dictate the tiles returned
+        ## this function allows us to implement Rack.set_rack_to_input
+        else:
+            desired_rack = [ x.strip() for x in desired_tiles.replace(',',' ').split(' ') ]
+            return [ self.draw_tile(x) for x in [desired_rack] ]
+

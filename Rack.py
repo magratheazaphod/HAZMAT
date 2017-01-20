@@ -33,7 +33,7 @@ class Rack:
     ## set rack to input letters, with desired letters delimited by commas.
     def set_rack_to_input(self, tb, rack):
         
-        # design function to accept either spaces or commas to separate input.
+        # accept either spaces or commas to separate input.
         desired_rack = [ x.strip() for x in rack.replace(',',' ').split(' ') ]
         
         if len(desired_rack) > 8:
@@ -46,6 +46,50 @@ class Rack:
 
         #[ tb.add_tile_to_bag(old_tile.pot) for old_tile in self.tiles_on_rack ]  ## 
         #[ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
+        
+
+    # very similar to draw_tile module, except that we require a definite input of what tiles are being removed
+    # in contrast, in the tilebag class it's important to have a random draw option.
+    # other slight difference is that draw_tile returns one tile at a time, while here we do a bunch at once.
+    
+    def remove_tile_from_rack(self, desired_tiles):
+        
+        for tile in desired_tiles
+        
+            #if we try to draw a tile that doesn't exist in an A-Math set
+            if str(tile_desired) not in Tile.point_value_dict.keys():
+                print("WARNING: The tile you've attempted to draw doesn't exist in A-Math!")
+                print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
+                return
+
+            else:
+                try:
+                    #using next should be consistently faster than using a map
+                    #note automatic attempt at conversion to str in case input was int.
+                    tile_drawn = next(tile for tile in self.tiles_in_bag \
+                                      if tile.pot == str(tile_desired))
+
+                #if there are none of the desired tile left in the tilebag
+                #give option of expanding tilebag with additional tile of interest.
+                except StopIteration:
+                    print('There are no more',tile_desired,'tiles in this tilebag.')
+                    print('Do you wish to create an additional',tile_desired,'tile? (n)o or (y)es')
+                    override = input('CAUTION: will permanently expand tilebag.')
+
+                    if override.lower() not in ['y', 'yes']:
+                        print('Unable to draw a',tile_desired,'tile.')
+                        return
+
+                    else:
+                        self.add_tile_to_bag(Tile(tile_desired))
+                        #below, recursive call - rerun function with newly expanded tilebag
+                        return self.draw_tile(tile_desired)
+
+            #unless we've already cleared out because of an exception, remove the chosen tile from bag
+            self.tiles_on_rack.remove(tile_drawn)        
+            removed_tiles.append ...
+        
+        return removed_tiles
 
                   
     ## print out tiles on rack nicely
