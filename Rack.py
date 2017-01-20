@@ -70,37 +70,28 @@ class Rack:
             print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
             return
 
-        else:
-            try:
-                #using next should be consistently faster than using a map
-                #note automatic attempt at conversion to str in case input was int.
-                tile_drawn = next(tile for tile in self.tiles_in_bag \
-                                  if tile.pot == str(tile_desired))
+        try:
+            #using next should be consistently faster than using a map
+            #note automatic attempt at conversion to str in case input was int.
+            tile_drawn = next(tile for tile in self.tiles_on_rack \
+                              if tile.pot == str(tile_desired))
 
-            #if there are none of the desired tile left in the tilebag
-            #give option of expanding tilebag with additional tile of interest.
-            except StopIteration:
-                print('There are no more',tile_desired,'tiles in this tilebag.')
-                print('Do you wish to create an additional',tile_desired,'tile? (n)o or (y)es')
-                override = input('CAUTION: will permanently expand tilebag.')
-
-                if override.lower() not in ['y', 'yes']:
-                    print('Unable to draw a',tile_desired,'tile.')
-                    return
-
-                else:
-                    self.add_tile_to_bag(Tile(tile_desired))
-                    #below, recursive call - rerun function with newly expanded tilebag
-                    return self.draw_tile(tile_desired)
-
-        #unless we've already cleared out because of an exception, remove the chosen tile from bag
-        self.tiles_on_rack.remove(tile_drawn)        
+        #if there are none of the desired tile left in the tilebag
+        #give option of expanding tilebag with additional tile of interest.
+        except StopIteration:
+            print('You are attempting to draw a tile that is not present on this rack.')
+            return
+          
+        #unless we've already cleared out because of an exception, remove the chosen tile from bag and return the Tile object removed.
+        self.tiles_on_rack.remove(tile_drawn)
+        return tile_drawn
         
                   
-    ## print out tiles on rack nicely
+    ## function to print out tiles on rack nicely
     ## eventually, will allow user to change display order.
     def print_tiles_on_rack(self):
-        print(' '.join([ x.pot for x in self.tiles_on_rack ]))
+        sorted_rack = sorted(self.tiles_on_rack, key = lambda x: (x.tile_type, x))
+        print(' '.join([ x.pot for x in sorted_rack ]))
         
     
     def exchange_tiles(self, tb):
