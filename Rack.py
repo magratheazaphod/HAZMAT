@@ -44,19 +44,30 @@ class Rack:
                 print('Did not adjust rack.')
                 return
 
-        #[ tb.add_tile_to_bag(old_tile.pot) for old_tile in self.tiles_on_rack ]  ## 
-        #[ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
+        tiles_back_to_bag = self.remove_tiles_from_rack()
+        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## 
+        [ self.tiles_on_rack.append(tb.draw_tile(new_tile)) for new_tile in desired_rack ]
+        ## not positive that the previous line will work - should be careful with
+        ## how None-types are handled.
+      
         
-
-    # very similar to draw_tile module, except that we require a definite input of what tiles are being removed
-    # in contrast, in the tilebag class it's important to have a random draw option.
-    # other slight difference is that draw_tile returns one tile at a time, while here we do a bunch at once.
-    def remove_tiles_from_rack(self, tiles_desired):
+    # very similar to draw_tile module, except that we require a definite input of what tiles are being removed (no random option)
+    # relies on calling function remove_single_tile for all tiles of interest
+    # DEFAULT: if input isn't specified, clear rack of ALL tiles.
+    def remove_tiles_from_rack(self, tiles_desired = 'all'):
         
         removed_tiles = []
         
-        for nexttile in tiles_desired:
-            removed_tiles.append(self.remove_single_tile(nexttile))
+        ## default case - empty the rack and throw all tiles back into tilebag
+        if tiles_desired == 'all':
+            for nexttile in self.tiles_on_rack:
+                removed_tiles.append(self.remove_single_tile(nexttile))
+       
+        else:
+            #start by parsing input (allow for both comma and spaces
+            
+            for nexttile in tiles_desired:
+                 removed_tiles.append(self.remove_single_tile(nexttile))
        
         return removed_tiles
     
@@ -73,7 +84,7 @@ class Rack:
         try:
             #using next should be consistently faster than using a map
             #note automatic attempt at conversion to str in case input was int.
-            tile_drawn = next(tile for tile in self.tiles_on_rack \
+            tile_chosen = next(tile for tile in self.tiles_on_rack \
                               if tile.pot == str(tile_desired))
 
         #if there are none of the desired tile left in the tilebag
