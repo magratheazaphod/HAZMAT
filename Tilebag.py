@@ -108,7 +108,7 @@ class Tilebag:
                     print('Did not add tile in question.')
                     return
         
-            self.tiles_in_bag.append(tile_object)
+            self.tiles_in_bag.append(added_tile)
         
         except KeyError:
             print("WARNING: The tile you've attempted to add doesn't exist in A-Math!")
@@ -148,28 +148,28 @@ class Tilebag:
                 print("Tiles should have a value between 0 or 20, be an operator (+, -, *, /, +|-, *|/ or =) or a blank (?).")
                 return
             
-            else:
-                try:
-                    #using next should be consistently faster than using a map
-                    #note automatic attempt at conversion to str in case input was int.
-                    tile_drawn = next(tile for tile in self.tiles_in_bag \
-                                      if tile.pot == str(tile_desired))
+            ##if tile is legal, attempt to draw
+            try:
+                #using next should be consistently faster than using a map
+                #note automatic attempt at conversion to str in case input was int.
+                tile_drawn = next(tile for tile in self.tiles_in_bag \
+                                  if tile.pot == str(tile_desired))
 
-                #if there are none of the desired tile left in the tilebag
-                #give option of expanding tilebag with additional tile of interest.
-                except StopIteration:
-                    print('There are no more',tile_desired,'tiles in this tilebag.')
-                    print('Do you wish to create an additional',tile_desired,'tile? (n)o or (y)es')
-                    override = input('CAUTION: will permanently expand tilebag.')
-                    
-                    if override.lower() not in ['y', 'yes']:
-                        print('Unable to draw a',tile_desired,'tile.')
-                        return
-                    
-                    else:
-                        self.add_tile_to_bag(Tile(tile_desired))
-                        #below, recursive call - rerun function with newly expanded tilebag
-                        return self.draw_tile(tile_desired)
+            #if there are none of the desired tile left in the tilebag,
+            #give option of expanding tilebag with additional tile of interest.
+            except StopIteration:
+                print('There are no more',tile_desired,'tiles in this tilebag.')
+                print('Do you wish to create an additional',tile_desired,'tile? (n)o or (y)es')
+                override = input('CAUTION: will permanently expand tilebag.')
+
+                if override.lower() not in ['y', 'yes']:
+                    print('Unable to draw a',tile_desired,'tile.')
+                    return
+
+                else:
+                    self.add_tile_to_bag(Tile(tile_desired))
+                    #below, recursive call - rerun function with newly expanded tilebag
+                    return self.draw_tile(tile_desired)
             
         else:    
             #choose random tile object, then remove this object from tilebag.
@@ -181,13 +181,13 @@ class Tilebag:
         
         
     #following function is distinct from the exchange_tiles function in the Rack class
-    #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag) - if so, tiles are swapped.
+    #exchange_tiles first checks if the exchange in question is legal (more than 5 tiles in bag)
     
-    #swap_tiles is a more versatile function that handles getting tiles back in the bag and getting the right ones out.
+    #instead, swap_tiles handles getting tiles back in the bag and getting the right ones out.
     #implementation is just using list comprehensions to automate calls of add_tile_to_bag and draw_tile.
     
-    #input tiles_back_to_bag should be a list of Tile objects, while desired_tiles is a space- or comma-delimited string
-    #containing all the desired tiles.
+    #input tiles_back_to_bag should be a list of Tile objects
+    #desired_tiles is a space- or comma-delimited string containing all the desired tiles.
     #Object returned is a list of Tile objects.
     
     def swap_tiles(self, tiles_back_to_bag, desired_tiles = 'rand'):
