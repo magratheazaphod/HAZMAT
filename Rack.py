@@ -45,18 +45,10 @@ class Rack:
                 print('Did not adjust rack.')
                 return
             
-        print(parsed_rack)
-
-        self.print_rack()
         tiles_back_to_bag = self.remove_tiles_from_rack() ## step 1 - remove tiles from rack
-        self.print_rack()
         [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return to tilebag
         new_tiles = [ tb.draw_tile(new_tile) for new_tile in parsed_rack ] ## step 3 - draw new tiles
-        print(new_tiles)
         self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge Nones from unsuccessful drawing.
-        print(self.tiles_on_rack)
-        ## not positive that the previous line will work - should be careful with
-        ## how None-types are handled.
       
         
     # very similar to draw_tile module, except that we require a definite input of what tiles are being removed (no random option)
@@ -118,5 +110,28 @@ class Rack:
     
     ## relies on the versatile Tilebag.swap_tiles function
     ## According to printed rules, exchanges can only happen with 5 or more tiles in bag.
-    def exchange_tiles(self, tb):
-        return 3
+    def exchange_tiles(self, tb, tiles_to_exchange):
+
+        parsed_exchange = [ x.strip() for x in target_rack.replace(',',' ').split(' ') ]
+        
+        ## two cases in which exchange aborted - less than 5 in bag, or attempted to exchange
+        ## too many tiles.
+        if tb.how_many_in_bag < 12:
+            print('Cannot exchange with 5 tiles or fewer in bag!')
+            return
+        elif len(parsed_exchange) > tb.how_many_in_bag()-8:
+            print('Not enough tiles in bag to exchange that many tiles.')
+            print('Max possible exchange is',tb.how_many_in_bag()-8,'tiles')
+            return
+
+        if len(parsed_exchange) > 8:
+            override = input('Requested rack with over 8 tiles - are you sure? (n)o or (y)es:')
+                  
+            if override.lower() not in ['y', 'yes']:
+                print('Did not adjust rack.')
+                return
+            
+        tiles_back_to_bag = self.remove_tiles_from_rack(tiles_to_exchange)
+        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return to tilebag
+        new_tiles = [ tb.draw_tile() for new_tile in parsed_rack ] ## step 3 - draw new tiles
+        self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge Nones from unsuccessful drawing.
