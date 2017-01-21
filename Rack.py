@@ -112,26 +112,35 @@ class Rack:
     ## According to printed rules, exchanges can only happen with 5 or more tiles in bag.
     def exchange_tiles(self, tb, tiles_to_exchange):
 
-        parsed_exchange = [ x.strip() for x in target_rack.replace(',',' ').split(' ') ]
+        parsed_exchange = [ x.strip() for x in tiles_to_exchange.replace(',',' ').split(' ') ]
         
         ## two cases in which exchange aborted - less than 5 in bag, or attempted to exchange
         ## too many tiles.
-        if tb.how_many_in_bag < 12:
+        if tb.how_many_in_bag() < 12:
             print('Cannot exchange with 5 tiles or fewer in bag!')
             return
-        elif len(parsed_exchange) > tb.how_many_in_bag()-8:
+        
+        ##perform a quick check to make sure that the tiles to be exchanged are actually on rack
+        currently_on_rack = [ tile.pot for tile in self.tiles_on_rack ]
+        try:
+            [ currently_on_rack.remove(x) for x in parsed_exchange ]
+            
+        except ValueError:
+            print('You\'re attempting to exchange tiles that aren\'t currently on your rack.')
+            override = input('Continue by exchanging as many tiles as possible from requested? (n)o or (y)es')
+            if override not in ['y','yes']:
+                print('Exchange aborted.')
+                return
+            
+        print(42)
+        
+        ##since A-math allows exchanges with less than 8 in bag, check that we're not trying to exchange too many.
+        if len(parsed_exchange) > tb.how_many_in_bag()-8:
             print('Not enough tiles in bag to exchange that many tiles.')
             print('Max possible exchange is',tb.how_many_in_bag()-8,'tiles')
             return
-
-        if len(parsed_exchange) > 8:
-            override = input('Requested rack with over 8 tiles - are you sure? (n)o or (y)es:')
-                  
-            if override.lower() not in ['y', 'yes']:
-                print('Did not adjust rack.')
-                return
             
-        tiles_back_to_bag = self.remove_tiles_from_rack(tiles_to_exchange)
-        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return to tilebag
-        new_tiles = [ tb.draw_tile() for new_tile in parsed_rack ] ## step 3 - draw new tiles
-        self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge Nones from unsuccessful drawing.
+        tiles_back_to_bag = self.remove_tiles_from_rack(parsed_exchange) ## step 1 - remove tiles from rack
+        [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return Tiles to tilebag
+        new_tiles = [ tb.draw_tile() for new_tile in tiles_back_to_bag ] ## step 3 - draw equal number of replacement tiles
+        self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge any Nones from unsuccessful drawing.
