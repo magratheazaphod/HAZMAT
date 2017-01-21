@@ -11,7 +11,7 @@
 
 ## ONGOING PROBLEMS:
 ## 1) The tiles that you want might be on the other players rack - have to be able to check for that case. May need a function like 'print_unseen'
-## 2) Need to error test remove_tile and set_rack_to_input functions.
+## 2) Should add specificity when user attempts to create/draw impossible tiles
 
 from Tile import Tile
 from Tilebag import Tilebag
@@ -54,6 +54,7 @@ class Rack:
     # very similar to draw_tile module, except that we require a definite input of what tiles are being removed (no random option)
     # relies on calling function remove_single_tile for all tiles of interest
     # DEFAULT: if input isn't specified, clear rack of ALL tiles.
+    # OUTPUT: A list of tile objects.
     def remove_tiles_from_rack(self, target_tiles = 'all'):
         
         removed_tiles = []
@@ -93,7 +94,7 @@ class Rack:
         #if there are none of the desired tile left in the tilebag
         #give option of expanding tilebag with additional tile of interest.
         except StopIteration:
-            print('You are attempting to draw a tile that is not present on this rack.')
+            print('The tile',target_tile,'is not present on this rack.')
             return
           
         #unless we've already cleared out because of an exception, remove the chosen tile from bag and return the Tile object removed.
@@ -131,16 +132,17 @@ class Rack:
             if override not in ['y','yes']:
                 print('Exchange aborted.')
                 return
-            
-        print(42)
-        
+                    
         ##since A-math allows exchanges with less than 8 in bag, check that we're not trying to exchange too many.
         if len(parsed_exchange) > tb.how_many_in_bag()-8:
             print('Not enough tiles in bag to exchange that many tiles.')
             print('Max possible exchange is',tb.how_many_in_bag()-8,'tiles')
             return
             
-        tiles_back_to_bag = self.remove_tiles_from_rack(parsed_exchange) ## step 1 - remove tiles from rack
+        ##IMPORTANT: remove_tiles_from_rack takes in a comma/space-delimited string, not a list
+        ##therefore, feed in raw input and not parsed_exchange from above.
+        tiles_back_to_bag = self.remove_tiles_from_rack(tiles_to_exchange) ## step 1 - remove tiles from rack
         [ tb.add_tile_to_bag(old_tile) for old_tile in tiles_back_to_bag ]  ## step 2 - return Tiles to tilebag
         new_tiles = [ tb.draw_tile() for new_tile in tiles_back_to_bag ] ## step 3 - draw equal number of replacement tiles
-        self.tiles_on_rack = [x for x in new_tiles if x is not None] ## step 4 - expunge any Nones from unsuccessful drawing.
+        self.tiles_on_rack.extend([x for x in new_tiles if x is not None]) 
+        ## step 4 - expunge any Nones from unsuccessful drawing, tack on new tiles to existing rack
