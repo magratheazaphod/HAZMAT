@@ -6,7 +6,9 @@
 ##    -exchange_tiles: after verifying that desired exchange is illegal, uses swap_tiles function from Tilebag to replace
 ##       selected tiles with random tiles from bag.
 ##    -fill_rack: fill rack back to maximum length tile_limit from Tilebag tb
-##    -print_tiles_on_rack: Print out all of the tiles currently on a given rack.
+##    -print_rack: Print out all of the tiles currently on a given rack.
+##    -remove_single_tile: finds tile object matching desired denomination and removes it from rack.
+##    -remove_tiles_from_rack: given comma/space-delimited input, removes those tiles from rack if possible.
 ##    -set_rack_to_input: manually change rack to listed input.
 
 ## ONGOING PROBLEMS:
