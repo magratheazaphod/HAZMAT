@@ -1,4 +1,4 @@
-In memory of Amnuay Ploysangngam, creator of A-Math, father of Scrabble in Thailand, lover of games.
+*In memory of Amnuay Ploysangngam, creator of A-Math, father of Scrabble in Thailand, lover of games.*
 
 # HAZMAT
 
